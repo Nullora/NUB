@@ -84,7 +84,7 @@ void clean(const char *name) {
     snprintf(files[3], 256, "%s.elf", name);
 
 
-    for (int i = 0; i < 3; i++) {
+    for (int i = 0; i < 4; i++) {
         if (remove(files[i]) == 0)
             printf("[-] removed %s\n", files[i]);
     }
@@ -110,24 +110,35 @@ void qemu(const char *name){
     run(cop);
     run(qemu);
 }
-void flash(const char *name) {
+void flash(const char *name, const char *kernelN, const char *usbN) {
     char efi[256];
+    char kernel[256];
+    char kernelP[512];
+    char usb[100];
     snprintf(efi, sizeof(efi), "%s.efi", name);
+    snprintf(kernel, sizeof(kernel), "%s.elf", kernelN);
+    snprintf(kernelP, sizeof(kernelP), "../kernel/%s", kernel);
+    snprintf(usb, sizeof(usb), "/dev/%s", usbN);
 
-    char *mount[] = { "mount", "/dev/sda1", "/mnt", NULL };
+
+    char *mount[] = { "mount", usb, "/mnt", NULL };
     char *copy[]  = { "cp", efi, "/mnt/EFI/BOOT/BOOTX64.EFI", NULL };
+    char *copyK[] = { "cp", kernelP, "/mnt/kernel.elf", NULL };
     char *umount[] = { "umount", "/mnt", NULL };
 
-    printf("[1/3] mounting...\n");
+    printf("[1/4] mounting...\n");
     if (run(mount) != 0) { fprintf(stderr, "[-] mount failed\n"); exit(1); }
 
-    printf("[2/3] copying...\n");
-    if (run(copy) != 0) { fprintf(stderr, "[-] copy failed\n"); exit(1); }
+    printf("[2/4] copying boot...\n");
+    if (run(copy) != 0) { fprintf(stderr, "[-] boot copy failed\n"); exit(1); }
 
-    printf("[3/3] unmounting...\n");
+    printf("[3/4] copying kernel...\n");
+    if(run(copyK) !=0){fprintf(stderr,"[-] kernel copy failed\n"); exit(1);}
+
+    printf("[4/4] unmounting...\n");
     run(umount);
 
-    printf("[+] flashed -> /dev/sda1\n");
+    printf("[+] flashed -> USB\n");
 }
 void kernel(const char *name) {
     char src[256], obj[256], elf[256];
@@ -151,14 +162,19 @@ void kernel(const char *name) {
         NULL
     };
 
+    char *copy[] = {"cp", elf, "../bootloader/esp/", NULL};
+
     printf("[1/2] compiling %s...\n", src);
     if (run(compile) != 0) { fprintf(stderr, "[-] compile failed\n"); exit(1); }
 
-    printf("[2/2] linking...\n");
+    printf("[2/3] linking...\n");
     if (run(link) != 0) { fprintf(stderr, "[-] link failed\n"); exit(1); }
-
+    printf("[3/3] copying into esp...\n");
+    if (run(copy) != 0) { fprintf(stderr, "[-] copy failed\n"); exit(1); }
     printf("[+] done -> %s\n", elf);
 }
+
+
 int main(int argc, char *argv[]) {
     if (argc < 3) {
         fprintf(stderr, "usage: nub <command> <target>\n");
@@ -169,14 +185,12 @@ int main(int argc, char *argv[]) {
         fprintf(stderr, "  nub kernel prog\n");
         return 1;
     }
-
     char *cmd    = argv[1];
     char *target = argv[2];
-
     if      (strcmp(cmd, "make")  == 0) build(target);
     else if (strcmp(cmd, "clean") == 0) clean(target);
     else if (strcmp(cmd, "run")==0) qemu(target);
-    else if (strcmp(cmd, "flash")==0) flash(target);
+    else if (strcmp(cmd, "flash")==0) flash(target, "kernel", "sda1"); //Modify "kernel" if you named your kernel.c something else  //Modify "sda1" to match your usb name
     else if (strcmp(cmd, "kernel")==0) kernel(target);
     else {
         fprintf(stderr, "unknown command: %s\n", cmd);
