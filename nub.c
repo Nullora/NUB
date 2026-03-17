@@ -79,6 +79,8 @@ void clean(const char *name) {
     snprintf(files[0], 256, "%s.o",   name);
     snprintf(files[1], 256, "%s.so",  name);
     snprintf(files[2], 256, "%s.efi", name);
+    snprintf(files[3], 256, "%s.elf", name);
+
 
     for (int i = 0; i < 3; i++) {
         if (remove(files[i]) == 0)
