@@ -32,7 +32,7 @@ void build(const char *name) {
         "gcc",
         "-ffreestanding", "-fno-stack-protector", "-fpic",
         "-fshort-wchar", "-mno-red-zone",
-        "-I/home/nullora/gnu-efi/inc", "-I/home/nullora/gnu-efi/inc/x86_64",
+        "-I/usr/include/efi", "-I/usr/include/efi/x86_64",
         "-DEFI_FUNCTION_WRAPPER",
         "-c", src, "-o", obj,
         NULL
@@ -57,6 +57,7 @@ void build(const char *name) {
         so, efi,
         NULL
     };
+    char *qemucp[] = {"cp", efi, "esp/EFI/BOOT/BOOTX64.EFI", NULL };
 
     char esp[256];
     snprintf(esp, sizeof(esp), "esp/EFI/BOOT/%s.EFI", name);
@@ -70,7 +71,8 @@ void build(const char *name) {
     printf("[3/4] objcopy...\n");
     if (run(objcopy) != 0) { fprintf(stderr, "[-] objcopy failed\n"); exit(1); }
 
-    printf("[4/4] cleanup...\n");
+    printf("[4/4] QeMucopy...\n");
+    if (run(qemucp)!=0) { fprintf(stderr, "[-] QeMu copy failed\n"); exit(1);}
     printf("[+] done -> %s\n", esp);
 }
 
