@@ -28,29 +28,26 @@ void build(const char *name) {
     snprintf(so,  sizeof(so),  "%s.so",  name);
     snprintf(efi, sizeof(efi), "%s.efi", name);
 
-char *compile[] = {
-    "gcc",
-    "-ffreestanding", "-fno-stack-protector", "-fpic",
-    "-fshort-wchar", "-mno-red-zone",
-    "-I/home/nullora/gnu-efi/inc",
-    "-I/home/nullora/gnu-efi/inc/x86_64",
-    "-DEFI_FUNCTION_WRAPPER",
-    "-c", src, "-o", obj,
-    NULL
-};
+    char *compile[] = {
+        "gcc",
+        "-ffreestanding", "-fno-stack-protector", "-fpic",
+        "-fshort-wchar", "-mno-red-zone",
+        "-I/home/nullora/gnu-efi/inc", "-I/home/nullora/gnu-efi/inc/x86_64",
+        "-DEFI_FUNCTION_WRAPPER",
+        "-c", src, "-o", obj,
+        NULL
+    };
 
-char *link[] = {
-    "ld",
-    "-nostdlib", "-znocombreloc",
-    "-T", "/home/nullora/gnu-efi/gnuefi/elf_x86_64_efi.lds",
-    "-shared", "-Bsymbolic",
-    "/home/nullora/gnu-efi/x86_64/gnuefi/crt0-efi-x86_64.o",  // changed
-    "-o", so,
-    "-L/home/nullora/gnu-efi/x86_64/gnuefi",  // changed
-    "-L/home/nullora/gnu-efi/x86_64/lib",     // changed
-    "-lgnuefi", "-lefi",
-    NULL
-};
+    char *link[] = {
+        "ld",
+        "-nostdlib", "-znocombreloc",
+        "-T", "/usr/lib/elf_x86_64_efi.lds",
+        "-shared", "-Bsymbolic",
+        "/usr/lib/crt0-efi-x86_64.o", obj,
+        "-o", so,
+        "-L/usr/lib", "-lefi", "-lgnuefi",
+        NULL
+    };
 
     char *objcopy[] = {
         "objcopy",
