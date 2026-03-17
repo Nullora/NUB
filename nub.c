@@ -125,7 +125,36 @@ void flash(const char *name) {
 
     printf("[+] flashed -> /dev/sda1\n");
 }
+void kernel(const char *name) {
+    char src[256], obj[256], elf[256];
+    snprintf(src, sizeof(src), "%s.c",   name);
+    snprintf(obj, sizeof(obj), "%s.o",   name);
+    snprintf(elf, sizeof(elf), "%s.elf", name);
 
+    char *compile[] = {
+        "gcc",
+        "-ffreestanding", "-fno-stack-protector", "-fno-pic",
+        "-mno-red-zone", "-mno-mmx", "-mno-sse", "-mno-sse2",
+        "-c", src, "-o", obj,
+        NULL
+    };
+
+    char *link[] = {
+        "ld",
+        "-nostdlib", "-static",
+        "-Ttext", "0x100000",
+        obj, "-o", elf,
+        NULL
+    };
+
+    printf("[1/2] compiling %s...\n", src);
+    if (run(compile) != 0) { fprintf(stderr, "[-] compile failed\n"); exit(1); }
+
+    printf("[2/2] linking...\n");
+    if (run(link) != 0) { fprintf(stderr, "[-] link failed\n"); exit(1); }
+
+    printf("[+] done -> %s\n", elf);
+}
 int main(int argc, char *argv[]) {
     if (argc < 3) {
         fprintf(stderr, "usage: nub <command> <target>\n");
@@ -133,6 +162,7 @@ int main(int argc, char *argv[]) {
         fprintf(stderr, "  nub clean prog\n");
         fprintf(stderr, "  nub run prog\n");
         fprintf(stderr, "  nub flash prog\n");
+        fprintf(stderr, "  nub kernel prog\n");
         return 1;
     }
 
@@ -143,6 +173,7 @@ int main(int argc, char *argv[]) {
     else if (strcmp(cmd, "clean") == 0) clean(target);
     else if (strcmp(cmd, "run")==0) qemu(target);
     else if (strcmp(cmd, "flash")==0) flash(target);
+    else if (strcmp(cmd, "kernel")==0) kernel(target);
     else {
         fprintf(stderr, "unknown command: %s\n", cmd);
         return 1;
