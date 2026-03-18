@@ -3,6 +3,9 @@
 #include <string.h>
 #include <unistd.h>
 #include <sys/wait.h>
+#include <sys/mount.h>
+#include <sys/stat.h>
+#include <fcntl.h>   // open()
 
 int run(char **args) {
     pid_t pid = fork();
@@ -18,6 +21,19 @@ int run(char **args) {
     int status;
     waitpid(pid,&status,0);
     return WEXITSTATUS(status);
+}
+void copyFile(const char* src, const char* dest){
+    int srcfd = open(src, O_RDONLY, 0755);
+    int destfd = open(dest, O_WRONLY | O_CREAT | O_TRUNC, 0755);
+    char buf[4096];
+    ssize_t bytes;
+    if(srcfd==-1){perror("open src failed"); exit(1);}
+    if(destfd==-1){perror("open dest failed"); exit(1);}
+    while((bytes = read(srcfd,buf,sizeof(buf)))>0){
+        write(destfd, buf, bytes);
+    }
+    close(srcfd);
+    close(destfd);
 }
 
 void build(const char *name) {
@@ -120,23 +136,19 @@ void flash(const char *name, const char *kernelN, const char *usbN) {
     snprintf(kernelP, sizeof(kernelP), "../kernel/%s", kernel);
     snprintf(usb, sizeof(usb), "/dev/%s", usbN);
 
-
-    char *mount[] = { "mount", usb, "/mnt", NULL };
-    char *copy[]  = { "cp", efi, "/mnt/EFI/BOOT/BOOTX64.EFI", NULL };
-    char *copyK[] = { "cp", kernelP, "/mnt/kernel.elf", NULL };
-    char *umount[] = { "umount", "/mnt", NULL };
-
     printf("[1/4] mounting...\n");
-    if (run(mount) != 0) { fprintf(stderr, "[-] mount failed\n"); exit(1); }
-
+    mount(usb, "/mnt", "vfat", 0, NULL);
+    
     printf("[2/4] copying boot...\n");
-    if (run(copy) != 0) { fprintf(stderr, "[-] boot copy failed\n"); exit(1); }
+    if(mkdir("/mnt/EFI", 0755)==-1) perror("mkdir EFI");
+    if(mkdir("/mnt/EFI/BOOT", 0755)==-1) perror("mkdir BOOT");
+    copyFile(efi,"/mnt/EFI/BOOT/BOOTX64.EFI");
 
     printf("[3/4] copying kernel...\n");
-    if(run(copyK) !=0){fprintf(stderr,"[-] kernel copy failed\n"); exit(1);}
+    copyFile(kernelP, "/mnt/kernel.elf");
 
     printf("[4/4] unmounting...\n");
-    run(umount);
+    umount("/mnt");
 
     printf("[+] flashed -> USB\n");
 }
@@ -157,6 +169,7 @@ void kernel(const char *name) {
     char *link[] = {
         "ld",
         "-nostdlib", "-static",
+        "-e", "main",
         "-Ttext", "0x100000",
         obj, "-o", elf,
         NULL
@@ -169,13 +182,15 @@ void kernel(const char *name) {
 
     printf("[2/3] linking...\n");
     if (run(link) != 0) { fprintf(stderr, "[-] link failed\n"); exit(1); }
-    printf("[3/3] copying into esp...\n");
+    printf("[3/3](+) copying into esp...\n");
     if (run(copy) != 0) { fprintf(stderr, "[-] copy failed\n"); exit(1); }
-    printf("[+] done -> %s\n", elf);
+    printf("[+++++] done -> %s\n", elf);
 }
 
 
 int main(int argc, char *argv[]) {
+    setgid(0);
+    printf("running as euid: %d\n", geteuid());
     if (argc < 3) {
         fprintf(stderr, "usage: nub <command> <target>\n");
         fprintf(stderr, "  nub make prog\n");
