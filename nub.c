@@ -115,6 +115,7 @@ void qemu(const char *name){
         "/usr/share/ovmf/OVMF.fd",
         "-drive",
         "format=raw,file=fat:rw:./esp",
+        "-device", "isa-debug-exit,iobase=0x501,iosize=0x1",
         NULL
     };
     char *cop[] = {
@@ -155,14 +156,21 @@ void flash(const char *name, const char *kernelN, const char *usbN) {
 void kernel(const char *name) {
     char src[256], obj[256], elf[256];
     snprintf(src, sizeof(src), "%s.c",   name);
-    snprintf(obj, sizeof(obj), "%s.o",   name);
-    snprintf(elf, sizeof(elf), "%s.elf", name);
-
+    snprintf(obj, sizeof(obj), "build/%s.o",   name);
+    snprintf(elf, sizeof(elf), "build/%s.elf", name);
+    char *mkbuild[] = { "mkdir", "-p", "build", NULL };
     char *compile[] = {
         "gcc",
         "-ffreestanding", "-fno-stack-protector", "-fno-pic",
         "-mno-red-zone", "-mno-mmx", "-mno-sse", "-mno-sse2",
         "-c", src, "-o", obj,
+        NULL
+    };
+    char *compile_mem[] = {
+        "gcc",
+        "-ffreestanding", "-fno-stack-protector", "-fno-pic",
+        "-mno-red-zone", "-mno-mmx", "-mno-sse", "-mno-sse2",
+        "-c", "memory.c", "-o", "build/memory.o",
         NULL
     };
 
@@ -171,26 +179,26 @@ void kernel(const char *name) {
         "-nostdlib", "-static",
         "-e", "main",
         "-Ttext", "0x100000",
-        obj, "-o", elf,
+        obj,"build/memory.o", "-o", elf,
         NULL
     };
 
     char *copy[] = {"cp", elf, "../bootloader/esp/", NULL};
-
-    printf("[1/2] compiling %s...\n", src);
-    if (run(compile) != 0) { fprintf(stderr, "[-] compile failed\n"); exit(1); }
-
-    printf("[2/3] linking...\n");
+    printf("[1/4] making build... \n");
+    run(mkbuild);
+    printf("[2/4] compiling %s...\n", src);
+    if (run(compile) != 0) { fprintf(stderr, "[-] kernel compile failed\n"); exit(1); }
+    if (run(compile_mem) != 0) { fprintf(stderr, "[-] memory compile failed\n"); exit(1); }
+    printf("[3/4] linking...\n");
     if (run(link) != 0) { fprintf(stderr, "[-] link failed\n"); exit(1); }
-    printf("[3/3](+) copying into esp...\n");
+    printf("[3/4](+) copying into esp...\n");
     if (run(copy) != 0) { fprintf(stderr, "[-] copy failed\n"); exit(1); }
-    printf("[+++++] done -> %s\n", elf);
+    printf("[+] done -> %s\n", elf);
 }
 
 
 int main(int argc, char *argv[]) {
     setgid(0);
-    printf("running as euid: %d\n", geteuid());
     if (argc < 3) {
         fprintf(stderr, "usage: nub <command> <target>\n");
         fprintf(stderr, "  nub make prog\n");
