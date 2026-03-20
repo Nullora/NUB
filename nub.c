@@ -159,6 +159,7 @@ void kernel(const char *name) {
     snprintf(obj, sizeof(obj), "build/%s.o",   name);
     snprintf(elf, sizeof(elf), "build/%s.elf", name);
     char *mkbuild[] = { "mkdir", "-p", "build", NULL };
+    char *nasm[] = {"nasm", "-f", "elf64", "gdt.asm", "-o", "build/gdta.o", NULL};
     char *compile[] = {
         "gcc",
         "-ffreestanding", "-fno-stack-protector", "-fno-pic",
@@ -180,13 +181,21 @@ void kernel(const char *name) {
         "-c", "tty.c", "-o", "build/tty.o",
         NULL
     };
+    
+    char *compile_gdt[] = {
+        "gcc",
+        "-ffreestanding", "-fno-stack-protector", "-fno-pic",
+        "-mno-red-zone", "-mno-mmx", "-mno-sse", "-mno-sse2",
+        "-c", "gdt.c", "-o", "build/gdt.o",
+        NULL
+    };
 
     char *link[] = {
         "ld",
         "-nostdlib", "-static",
         "-e", "main",
         "-Ttext", "0x100000",
-        obj,"build/memory.o", "build/tty.o","-o", elf,
+        obj,"build/memory.o", "build/tty.o","build/gdta.o","build/gdt.o","-o", elf,
         NULL
     };
 
@@ -197,6 +206,8 @@ void kernel(const char *name) {
     if (run(compile) != 0) { fprintf(stderr, "[-] kernel compile failed\n"); exit(1); }
     if (run(compile_mem) != 0) { fprintf(stderr, "[-] memory compile failed\n"); exit(1); }
     if (run(compile_tty) != 0) { fprintf(stderr, "[-] tty compile failed\n"); exit(1); }
+    if (run(compile_gdt) != 0) { fprintf(stderr, "[-] gdt compile failed\n"); exit(1); }
+    if (run(nasm) != 0) { fprintf(stderr, "[-] gdt.asm compile failed\n"); exit(1); }
     printf("[3/4] linking...\n");
     if (run(link) != 0) { fprintf(stderr, "[-] link failed\n"); exit(1); }
     printf("[3/4](+) copying into esp...\n");
