@@ -134,7 +134,7 @@ void flash(const char *name, const char *kernelN, const char *usbN) {
     char usb[100];
     snprintf(efi, sizeof(efi), "%s.efi", name);
     snprintf(kernel, sizeof(kernel), "%s.elf", kernelN);
-    snprintf(kernelP, sizeof(kernelP), "../kernel/%s", kernel);
+    snprintf(kernelP, sizeof(kernelP), "../kernel/build/%s", kernel);
     snprintf(usb, sizeof(usb), "/dev/%s", usbN);
 
     printf("[1/4] mounting...\n");
@@ -173,13 +173,20 @@ void kernel(const char *name) {
         "-c", "memory.c", "-o", "build/memory.o",
         NULL
     };
+    char *compile_tty[] = {
+        "gcc",
+        "-ffreestanding", "-fno-stack-protector", "-fno-pic",
+        "-mno-red-zone", "-mno-mmx", "-mno-sse", "-mno-sse2",
+        "-c", "tty.c", "-o", "build/tty.o",
+        NULL
+    };
 
     char *link[] = {
         "ld",
         "-nostdlib", "-static",
         "-e", "main",
         "-Ttext", "0x100000",
-        obj,"build/memory.o", "-o", elf,
+        obj,"build/memory.o", "build/tty.o","-o", elf,
         NULL
     };
 
@@ -189,11 +196,12 @@ void kernel(const char *name) {
     printf("[2/4] compiling %s...\n", src);
     if (run(compile) != 0) { fprintf(stderr, "[-] kernel compile failed\n"); exit(1); }
     if (run(compile_mem) != 0) { fprintf(stderr, "[-] memory compile failed\n"); exit(1); }
+    if (run(compile_tty) != 0) { fprintf(stderr, "[-] tty compile failed\n"); exit(1); }
     printf("[3/4] linking...\n");
     if (run(link) != 0) { fprintf(stderr, "[-] link failed\n"); exit(1); }
     printf("[3/4](+) copying into esp...\n");
     if (run(copy) != 0) { fprintf(stderr, "[-] copy failed\n"); exit(1); }
-    printf("[+] done -> %s\n", elf);
+    printf("[+++] done -> %s\n", elf);
 }
 
 
