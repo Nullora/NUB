@@ -11,6 +11,7 @@ nub kernel "prog" // build kernel
 ```
 # Warning
 This tool is hardcoded to build my custom [NovusKernel](https://github.com/Nullora/NovusKernel) and custom bootloader, to build more UEFI apps like your custom bootloader, make sure you change the hardcoded paths in the kernel() function. If you aim to use the flash feature, make sure to modify line 113 and change **sda1** to your usb name, you can find it using **lsblk** in terminal.
+I am aware you can use Makefile instead, i just prefer my own tool cause im biased :)
 
 # Note
 I have a full toolset that goes along super well with this one. Check them out in my profile

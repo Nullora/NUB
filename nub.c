@@ -185,7 +185,7 @@ void kernel(const char *name) {
     char *compile_gdt[] = {
         "gcc",
         "-ffreestanding", "-fno-stack-protector", "-fno-pic",
-        "-mno-red-zone", "-mno-mmx", "-mno-sse", "-mno-sse2",
+        "-mno-red-zone", "-mno-mmx", "-mno-sse", "-mno-sse2", "-mgeneral-regs-only",
         "-c", "gdt.c", "-o", "build/gdt.o",
         NULL
     };
