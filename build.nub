@@ -4,10 +4,12 @@ TARGET = nub
 cmtmsg = from NUB!
 msg = pushing to github.....
 /g{
-	sh: (CXX) (CXXFLAGS) nub.cpp -o (TARGET)
 	sh: git add .
 	sh: git commit -m "(cmtmsg)"
 	sh: git push
+}
+/b{
+	sh: (CXX) (CXXFLAGS) nub.cpp -o (TARGET)
 }
 main{
 	sh: echo (msg)
