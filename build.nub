@@ -4,7 +4,7 @@ main{
 /b{
     sh: echo function on!!!!
 }
-/g{
+/g{ //i personally use this
     sh: git add .
     sh: git commit -m "sent from NUB"
     sh: git push
