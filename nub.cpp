@@ -72,7 +72,7 @@ void parse(string f){
                 value = value.substr(1);
                 if(value.front() == '"') value = value.substr(1);
                 if(value.back() == '"') value.pop_back();
-                variables[name] = value;
+                variables[name] = substitute(value);
             }
             //main function
             if(line=="main{"){
