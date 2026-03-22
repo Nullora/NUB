@@ -88,7 +88,8 @@ void parse(string f){
                 int i = line.find("fn:");
                 string fname = substitute(line.substr(i+3));
                 for(auto a:functions[fname]){
-                    system(a.c_str());
+                    string cmd = substitute(a);
+                    system(cmd.c_str());
                 }
             }
             //main end
