@@ -1,8 +1,11 @@
+cmtmsg = from NUB!
+msg = pushing to github.....
 /g{
-    sh: git add .
-    sh: git commit -m "sent from NUB"
-    sh: git push
+	sh: git add .
+	sh: git commit -m "(cmtmsg)"
+	sh: git push
 }
 main{
-    fn: g
+	sh: echo (msg)
+	fn: g
 }
