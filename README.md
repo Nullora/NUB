@@ -15,3 +15,4 @@ joe@pc: ~/path/to/nubfile$ nub
 //output:
 hello world!
 ```
+Find more examples in file **build.nub**
