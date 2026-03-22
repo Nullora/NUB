@@ -4,5 +4,5 @@
     sh: git push
 }
 main{
-    fn:2
+    fn:g
 }
