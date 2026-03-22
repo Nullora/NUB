@@ -12,11 +12,13 @@ using namespace std;
 
 //flags
 bool mainF = false;
+string modF = "";
 
 
 
 //maps
 unordered_map<std::string,std::string> variables;
+vector<std::string> functions;
 
 //functions
 string findNub(){
@@ -44,14 +46,24 @@ string substitute(string cmd) {
     return result;
 }
 //parse
-void parse(){
+void parse(string f){
     string filename = findNub();
     ifstream in(filename);
     string line;
     while(getline(in,line)){
+        // handle line continuation
+        while(!line.empty() && line.back() == '\\'){
+            line.pop_back();
+            string next;
+            getline(in, next);
+            int start = next.find_first_not_of(" \t");
+            if(start != string::npos)
+                next = next.substr(start);
+            line += " " + next;
+        }
         if(!line.empty()){
             //variables
-            if(line.find("=") != string::npos) {
+            if(!mainF && line.find("=") != string::npos) {
                 istringstream ss(line);
                 string name, eq, value;
                 ss >> name >> eq;
@@ -62,13 +74,12 @@ void parse(){
                 if(value.back() == '"') value.pop_back();
                 variables[name] = value;
             }
-
             //main function
             if(line=="main{"){
                 mainF=true;
             }
             //shell commands
-            if(mainF && line.find("sh:") != string::npos){
+            if(mainF && line.find("sh:") != string::npos && f==""){
                 int i = line.find("sh:");
                 string cmd = substitute(line.substr(i+3));
                 system(cmd.c_str());
@@ -77,17 +88,30 @@ void parse(){
             if(line=="}"){
                 mainF=false;
             }
+            //modular function
+            if(line.starts_with("/")&&!mainF){
+                int end = line.find('{');
+                string funcname = line.substr(1, end-1);
+                functions.push_back(funcname);
+                modF=funcname;
+            }
+            if(modF==f && line.find("sh:") != string::npos && !mainF){
+                int i = line.find("sh:");
+                string cmd = substitute(line.substr(i+3));
+                system(cmd.c_str());
+            }
         }
     }
 }
 
 
-
-int main(){
+int main(int argc, char* argv[]){
     setuid(0);
     setgid(0);
+    string f="";
+    if(argc>1) f = argv[1];
     if(findNub()!=""){
-        parse();
+        parse(f);
     }else{
         cout<<"no .nub file found \n";
     }

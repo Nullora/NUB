@@ -34,3 +34,15 @@ main{
     //if your variable does not exist, the interpreter will fill it with NULL and bash will complain about lack of operrand
 }
 ```
+## To call a function
+As of right now, you can't call a function from main. I will change that soon.
+```c
+/functioname{
+    sh: echo printed from function! 
+}
+```
+And to actually call it, you do:
+```bash
+nub functioname
+output: printed from function!
+```

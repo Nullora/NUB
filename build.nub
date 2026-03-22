@@ -1,10 +1,6 @@
-text = hello
-text2 =  world!!
-dir = build
 main{
-    sh: echo (text)(text2)
-    sh: echo I learned how to parse files correctly with C++!!!
-    sh: rm -rf (dir)
-    sh: mkdir (dir)
-    sh: cp nub.cpp build
+    sh: echo function off!!
+}
+/b{
+    sh: echo function on!!!!
 }
