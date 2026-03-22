@@ -31,5 +31,6 @@ main{ //this is important. any <sh: > you announce outside of main will not do a
 ```c
 main{
     sh: echo (variablename) //encase your variable name in parenthesis
+    //if your variable does not exist, the interpreter will fill it with NULL and bash will complain about lack of operrand
 }
 ```
