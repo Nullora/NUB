@@ -1,4 +1,4 @@
-/g{ //i personally use this
+/g{
     sh: git add .
     sh: git commit -m "sent from NUB"
     sh: git push
