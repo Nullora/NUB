@@ -7,5 +7,6 @@
     sh: git pull --no-rebase
 }
 main{
+    fn:p
     fn:g
 }
