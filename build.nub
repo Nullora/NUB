@@ -1,6 +1,7 @@
 cmtmsg = from NUB!
 msg = pushing to github.....
 /g{
+	sh: ndep dep nub
 	sh: git add .
 	sh: git commit -m "(cmtmsg)"
 	sh: git push
