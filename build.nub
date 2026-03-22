@@ -1,7 +1,5 @@
-bld = build
-text = hello nub!
+text = hello
+text2 =  world
 main{
-    sh: echo (text)
-    sh: rm -rf (bld)
-    sh: mkdir (bld)
+    sh: echo (text)(text2)
 }
