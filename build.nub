@@ -6,4 +6,5 @@ main{
     sh: echo I learned how to parse files correctly with C++!!!
     sh: rm -rf (dir)
     sh: mkdir (dir)
+    sh: cp nub.cpp build
 }

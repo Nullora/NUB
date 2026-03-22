@@ -16,3 +16,20 @@ joe@pc: ~/path/to/nubfile$ nub
 hello world!
 ```
 Find more examples in file **build.nub**
+# Syntax
+## To announce a variable:
+```c
+variablename = value //you can only announce a variable outside main
+```
+## To run any bash command:
+```c
+main{ //this is important. any <sh: > you announce outside of main will not do anything
+    sh: <your command here>
+}
+```
+## To reference a variable
+```c
+main{
+    sh: echo (variablename) //encase your variable name in parenthesis
+}
+```

@@ -51,7 +51,7 @@ void parse(){
     while(getline(in,line)){
         if(!line.empty()){
             //variables
-            if(!mainF && line.find("=") != string::npos) {
+            if(line.find("=") != string::npos) {
                 istringstream ss(line);
                 string name, eq, value;
                 ss >> name >> eq;
