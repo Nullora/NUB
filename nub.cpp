@@ -88,7 +88,6 @@ void parse(string f){
             if(line.find("fn: ") != string::npos && mainF && f.empty()){
                 int i = line.find("fn: ");
                 string fname = substitute(line.substr(i+4));
-                cout << "calling: '" << fname << "' size: " << functions[fname].size() << "\n";
                 for(auto a:functions[fname]){
                     system(a.c_str());
                 }
