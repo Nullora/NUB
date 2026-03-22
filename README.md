@@ -34,18 +34,22 @@ main{
 }
 ```
 ## To call a function
-As of right now, you can't call a function from main. I will change that soon.
 ```c
 /functioname{
     sh: echo printed from function! 
 }
 ```
-And to actually call it, you do:
-```bash
-nub functioname
-output: printed from function!
+And to actually call it:
+```c
+main{
+    fn: functioname
+}
 ```
-
+Warning: Make sure you define the function before main{}
+```bash
+#You can also call the funcions individually from cmd. just run this:
+nub functioname
+```
 
 
 Find more in file **build.nub**
