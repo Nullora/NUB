@@ -18,7 +18,7 @@ string modF = "";
 
 //maps
 unordered_map<std::string,std::string> variables;
-vector<std::string> functions;
+unordered_map<string, vector<string>> functions;
 
 //functions
 string findNub(){
@@ -78,24 +78,38 @@ void parse(string f){
             if(line=="main{"){
                 mainF=true;
             }
-            //shell commands
+            //shell commands in main
             if(mainF && line.find("sh:") != string::npos && f==""){
                 int i = line.find("sh:");
                 string cmd = substitute(line.substr(i+3));
                 system(cmd.c_str());
             }
+            if(line.find("fn:") != string::npos && mainF){
+                int i = line.find("fn:");
+                string fname = substitute(line.substr(i+3));
+                for(auto a:functions[fname]){
+                    system(a.c_str());
+                }
+            }
             //main end
             if(line=="}"){
                 mainF=false;
+                modF="";
             }
-            //modular function
+            //modular function start
             if(line.starts_with("/")&&!mainF){
                 int end = line.find('{');
                 string funcname = line.substr(1, end-1);
-                functions.push_back(funcname);
                 modF=funcname;
             }
-            if(modF==f && line.find("sh:") != string::npos && !mainF){
+            //shell commands in modular function (not called)
+            if(line.find("sh:") != string::npos && !mainF && !modF.empty()){
+                int i = line.find("sh:");
+                string cmd = substitute(line.substr(i+3));
+                functions[modF].push_back(cmd);
+            }
+            //shell commands in modular function (called from cmd)
+            if(!modF.empty() && line.find("sh:") != string::npos && modF==f){
                 int i = line.find("sh:");
                 string cmd = substitute(line.substr(i+3));
                 system(cmd.c_str());

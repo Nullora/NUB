@@ -6,3 +6,7 @@
 /p{
     sh: git pull --no-rebase
 }
+
+main{
+    fn:g
+}
