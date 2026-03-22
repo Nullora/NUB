@@ -4,3 +4,9 @@ main{
 /b{
     sh: echo function on!!!!
 }
+/g{
+    sh: git pull --no-rebase
+    sh: git add .
+    sh: git commit -m "sent from NUB"
+    sh: git push
+}
