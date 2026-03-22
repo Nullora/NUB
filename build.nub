@@ -1,9 +1,3 @@
-main{
-    sh: echo function off!!
-}
-/b{
-    sh: echo function on!!!!
-}
 /g{ //i personally use this
     sh: git add .
     sh: git commit -m "sent from NUB"
