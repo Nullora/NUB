@@ -1,6 +1,7 @@
-bld = /build
+bld = build
 text = hello nub!
 main{
     sh: echo (text)
+    sh: rm -rf (bld)
     sh: mkdir (bld)
 }

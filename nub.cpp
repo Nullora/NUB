@@ -55,7 +55,8 @@ void parse(){
                 istringstream ss(line);
                 string name, eq, value;
                 ss >> name >> eq;
-
+                getline(ss, value);
+                if(value.empty()) continue;
                 value = value.substr(1);
                 if(value.front() == '"') value = value.substr(1);
                 if(value.back() == '"') value.pop_back();
@@ -88,6 +89,6 @@ int main(){
     if(findNub()!=""){
         parse();
     }else{
-        cout<<"no file found \n";
+        cout<<"no .nub file found \n";
     }
 }
