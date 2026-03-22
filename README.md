@@ -15,7 +15,6 @@ joe@pc: ~/path/to/nubfile$ nub
 //output:
 hello world!
 ```
-Find more examples in file **build.nub**
 # Syntax
 ## To announce a variable:
 ```c
@@ -46,3 +45,7 @@ And to actually call it, you do:
 nub functioname
 output: printed from function!
 ```
+
+
+
+Find more in file **build.nub**
