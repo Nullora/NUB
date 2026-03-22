@@ -84,9 +84,11 @@ void parse(string f){
                 string cmd = substitute(line.substr(i+3));
                 system(cmd.c_str());
             }
+            //calling functions from main
             if(line.find("fn:") != string::npos && mainF){
                 int i = line.find("fn:");
                 string fname = substitute(line.substr(i+3));
+                cout << "calling: '" << fname << "' size: " << functions[fname].size() << "\n";
                 for(auto a:functions[fname]){
                     string cmd = substitute(a);
                     system(cmd.c_str());
