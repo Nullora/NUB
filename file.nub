@@ -1,6 +1,6 @@
+bld = /build
+text = hello nub!
 main{
-    sh: echo helloooooo
-    sh: ndep add ~/nnet/src/nn.cpp nnet
-    sh: ndep add-d ~/nub/nn.cpp nnet
-    sh: ndep dep nnet
+    sh: echo (text)
+    sh: mkdir (bld)
 }

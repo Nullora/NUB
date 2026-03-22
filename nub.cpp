@@ -26,6 +26,23 @@ string findNub(){
     }
     return "";
 }
+//subs
+string substitute(string cmd) {
+    string result = "";
+    int i = 0;
+    while(i < cmd.size()) {
+        if(cmd[i] == '(') {
+            int end = cmd.find(')', i);
+            string varname = cmd.substr(i+1, end-i-1);
+            if(variables.find(varname) != variables.end())
+                result += variables[varname];
+            i = end + 1;
+        } else {
+            result += cmd[i++];
+        }
+    }
+    return result;
+}
 //parse
 void parse(){
     string filename = findNub();
@@ -33,14 +50,29 @@ void parse(){
     string line;
     while(getline(in,line)){
         if(!line.empty()){
+            //variables
+            if(!mainF && line.find("=") != string::npos) {
+                istringstream ss(line);
+                string name, eq, value;
+                ss >> name >> eq;
+
+                value = value.substr(1);
+                if(value.front() == '"') value = value.substr(1);
+                if(value.back() == '"') value.pop_back();
+                variables[name] = value;
+            }
+
+            //main function
             if(line=="main{"){
                 mainF=true;
             }
+            //shell commands
             if(mainF && line.find("sh:") != string::npos){
                 int i = line.find("sh:");
-                string cmd = line.substr(i+3);
+                string cmd = substitute(line.substr(i+3));
                 system(cmd.c_str());
             }
+            //main end
             if(line=="}"){
                 mainF=false;
             }
