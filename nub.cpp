@@ -85,7 +85,7 @@ void parse(string f){
                 system(cmd.c_str());
             }
             //calling functions from main
-            if(line.find("fn: ") != string::npos && mainF){
+            if(line.find("fn: ") != string::npos && mainF && f.empty()){
                 int i = line.find("fn: ");
                 string fname = substitute(line.substr(i+4));
                 cout << "calling: '" << fname << "' size: " << functions[fname].size() << "\n";
