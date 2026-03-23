@@ -63,7 +63,7 @@ void parse(string f){
         }
         if(!line.empty()){
             //variables
-            if(!mainF && line.find("=") != string::npos) {
+            if(line.find("=") != string::npos) {
                 istringstream ss(line);
                 string name, eq, value;
                 ss >> name >> eq;
@@ -93,9 +93,8 @@ void parse(string f){
                 }
             }
             //main end
-            if(line=="}"){
+            if(line=="}" && mainF){
                 mainF=false;
-                modF="";
             }
             //modular function start
             if(line.starts_with("/")&&!mainF){
@@ -114,6 +113,10 @@ void parse(string f){
                 int i = line.find("sh:");
                 string cmd = substitute(line.substr(i+3));
                 system(cmd.c_str());
+            }
+            //function end
+            if(line=="}" && !modF.empty()){
+                modF="";
             }
         }
     }
