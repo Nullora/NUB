@@ -124,7 +124,6 @@ int main(int argc, char* argv[]){
     if(argc>1) f = argv[1];
     if(findNub()!=""){
         parse(f);
-        cout<<"done\n";
     }else{
         cout<<"no .nub file found \n";
     }
