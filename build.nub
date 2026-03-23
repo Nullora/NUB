@@ -1,8 +1,9 @@
-msg = pushing from NUB
-msg = TESTING NUBBB
+cmtmsg = pushing from NUB
+msg = pushed successful!
+
 /g{
-	sh: git add . && git commit -m "(msg)" && git push \
-	&& echo pushed to github
+	sh: git add . && git commit -m "(cmtmsg)" && git push \
+	&& echo (msg)
 }
 /p{
 	sh: git pull --no-rebase
