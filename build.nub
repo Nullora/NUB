@@ -13,9 +13,5 @@ msg = pushing to github.....
 }
 main{
 	sh: echo (msg)
-/g{
-	sh: git add .
-	sh: git commit -m "(cmtmsg)"
-	sh: git push
-}
+	fn: g
 }
