@@ -1,10 +1,11 @@
 msg = pushing from NUB
+msg = TESTING NUBBB
 /g{
 	sh: git add . && git commit -m "(msg)" && git push \
 	&& echo pushed to github
 }
 /p{
-	sh: git pull --no-rebase && echo pulled
+	sh: git pull --no-rebase
 }
 main{
 	fn: g
