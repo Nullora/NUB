@@ -1,9 +1,10 @@
 msg = pushing from NUB
 /g{
-	sh: git add . && git commit -m "(msg)" && git push
+	sh: git add . && git commit -m "(msg)" && git push \
+	&& echo pushed to github
 }
 /p{
-	sh: git pull --no-rebase
+	sh: git pull --no-rebase && echo pulled
 }
 main{
 	fn: g
