@@ -1,17 +1,10 @@
-CXX = g++
-CXXFLAGS = -std=c++20
-TARGET = nub
-cmtmsg = from NUB!
-msg = pushing to github.....
+msg = pushing from NUB
 /g{
-	sh: git add .
-	sh: git commit -m "(cmtmsg)"
-	sh: git push
+	sh: git add . && git commit -m "(msg)" && git push
 }
-/b{
-	sh: (CXX) (CXXFLAGS) nub.cpp -o (TARGET)
+/p{
+	sh: git pull --no-rebase
 }
 main{
-	sh: echo (msg)
 	fn: g
 }

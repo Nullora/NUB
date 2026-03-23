@@ -7,7 +7,6 @@
 #include <unistd.h>
 #include <filesystem>
 #include<dirent.h>
-//system(cpCmd.c_str());
 using namespace std;
 
 //flags
@@ -118,8 +117,6 @@ void parse(string f){
         }
     }
 }
-
-
 int main(int argc, char* argv[]){
     setuid(0);
     setgid(0);
