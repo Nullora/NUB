@@ -92,9 +92,10 @@ void parse(string f){
                     system(a.c_str());
                 }
             }
-            //main end
-            if(line=="}" && mainF){
+            //end
+            if(line=="}"){
                 mainF=false;
+                modF="";
             }
             //modular function start
             if(line.starts_with("/")&&!mainF){
@@ -113,10 +114,6 @@ void parse(string f){
                 int i = line.find("sh:");
                 string cmd = substitute(line.substr(i+3));
                 system(cmd.c_str());
-            }
-            //function end
-            if(line=="}" && !modF.empty()){
-                modF="";
             }
         }
     }
