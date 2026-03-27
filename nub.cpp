@@ -19,7 +19,7 @@ string modF = "";
 unordered_map<std::string,std::string> variables;
 unordered_map<string, vector<string>> functions;
 
-//functions
+//& findNub
 string findNub(){
     for(auto& entry : std::filesystem::directory_iterator(".")) {
         if(entry.path().extension() == ".nub")
@@ -27,7 +27,8 @@ string findNub(){
     }
     return "";
 }
-//subs
+//!
+//& substitute
 string substitute(string cmd) {
     string result = "";
     int i = 0;
@@ -44,7 +45,8 @@ string substitute(string cmd) {
     }
     return result;
 }
-//parse
+//!
+//& parse
 void parse(string f){
     string filename = findNub();
     ifstream in(filename);
@@ -84,7 +86,7 @@ void parse(string f){
                 system(cmd.c_str());
             }
             //calling functions from main
-            if(line.find("fn: ") != string::npos && mainF && f.empty()){
+            if(line.find("fn: ") != string::npos && f.empty() && (mainF || !modF.empty())){
                 int i = line.find("fn: ");
                 string fname = substitute(line.substr(i+4));
                 for(auto a:functions[fname]){
@@ -117,6 +119,8 @@ void parse(string f){
         }
     }
 }
+//!
+//& main
 int main(int argc, char* argv[]){
     setuid(0);
     setgid(0);
@@ -128,3 +132,4 @@ int main(int argc, char* argv[]){
         cout<<"no .nub file found \n";
     }
 }
+//!

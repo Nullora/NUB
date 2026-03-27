@@ -1,5 +1,5 @@
 cmtmsg = pushing from NUB
-msg = pushed successful!
+msg = push successful!
 
 /g{
 	sh: git add . && git commit -m "(cmtmsg)" && git push \
